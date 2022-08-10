@@ -1,0 +1,20 @@
+{% extends "navbar.html" %}
+
+{% block content %}
+<section class="text-gray-600 body-font relative">
+  <div class="container px-5 py-15 mx-auto">
+    
+    <div class="lg:w-1/2 md:w-2/3 mx-auto">
+        <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">Settings</h1>
+       <hr>
+        <div class="row" id="user-settings">
+        <div id="information" ></div>
+        {% include 'users/partials/settings.html' %}
+        </div>
+        </div>
+       
+    </div>
+  </div>
+</section>
+
+{% endblock %}

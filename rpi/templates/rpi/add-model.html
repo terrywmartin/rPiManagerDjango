@@ -1,0 +1,31 @@
+{% extends "navbar.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="justify-content-center mt-5">
+        
+        <div class="card shadow-sm login-card col-lg-6 col-md-6 col-sm-6 mx-auto" >
+            <div class="card-header">
+                Raspberry Pi Model
+            </div>
+            <div class="card-body  ">
+                <form  method="POST" >
+                    {% csrf_token %}
+                     {% for field in form %}
+                     <div class="form-outline mb-4">
+                        <label for="formInput#text">{{field.label}} </label>
+                        {{field}}
+                      </div>
+                      {% endfor %}
+                    
+
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary btn-block mb-4">Submit</button>
+                    <a href="{% url next %}" class="btn btn-danger btn-block mb-4">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,10 @@
+
+    <form  hx-put="{% url 'users:view_profile' %}" hx-target="#information">
+        {% csrf_token %}
+        
+        <br>
+       
+        <button type="submit"  class="flex text-white bg-blue-500 border-0 py-2 px-8 focus:outline-none hover:bg-blue-600 rounded text">Save</button>
+    
+        
+    </form>

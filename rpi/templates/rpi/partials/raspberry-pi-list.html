@@ -1,0 +1,24 @@
+
+<ul class="list-group ">
+    {% for rpi in rpis %}
+    <li class="list-group-item d-flex justify-content-between align-items-center shadow-sm">
+       {{rpi.name}}
+        <div class=" btn-group">
+            <a title="Edit" href="{% url 'rpi:edit_rpi' rpi.id %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-edit"></i> </a>
+            <a title="Details" href="{% url 'rpi:view_rpi' rpi.id %}" class="btn btn-success btn-sm"><i class="fas fa-list-alt"></i> </a>
+            <span title="Delete" hx-delete="{% url 'rpi:delete_rpi' rpi.id %}" hx-target="#rpi-list" hx-confirm="Confirm?" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i></span>
+            <a title="Settings" href="{% url 'rpi:rpi_settings' rpi.id %}" class="btn btn-outline-info btn-sm"><i class="fas fa-cog"></i></a>
+            <a  title="Upload Key" href="{% url 'rpi:rpi_upload_key' rpi.id %}" class="btn btn-outline-info btn-sm"><i class="fas fa-upload"></i></a>
+            <a title="Download Key" href="{% url 'rpi:rpi_download_key' rpi.id %}" class="btn btn-outline-info btn-sm"><i class="fas fa-download"></i></a>
+            {% if rpi.deployed %}
+                <a title="Check-in" href="{% url 'rpi:rpi_checkin' rpi.id %}" class="btn btn-outline-info btn-sm"><i class="fas fa-arrow-circle-left"></i>&nbsp;Check-in</a>
+            {% else %}
+                <a title="Deploy" href="{% url 'rpi:rpi_deploy' rpi.id %}" class="btn btn-outline-info btn-sm"><i class="fas fa-arrow-circle-right"></i>&nbsp;Deploy</a>
+             {% endif %}
+        
+        </div>
+
+       
+    </li>
+{% endfor %}
+</ul>

@@ -3,8 +3,9 @@
     {% for model in models %}
     <li class="list-group-item d-flex justify-content-between align-items-center shadow-sm">
        {{model.name}}
-        <div class="action-buttons actions-buttons-right d-grid gap-2 col-4 d-md-block btn-group">
-            <a href="{% url 'rpi:edit_model' model.id %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-edit"></i> </a><span hx-delete="{% url 'rpi:delete_model' model.id %}" hx-target="#model-list" hx-confirm="Confirm?" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i></span>
+        <div class=" btn-group">
+            <a title="Edit" href="{% url 'rpi:edit_model' model.id %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-edit"></i> Edit</a>
+            <span title="Delete" hx-delete="{% url 'rpi:delete_model' model.id %}" hx-target="#model-list" hx-confirm="Confirm?" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i> Delete</span>
         </div>
         
     </li>

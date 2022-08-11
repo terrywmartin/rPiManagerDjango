@@ -14,4 +14,15 @@ class UserProfile(models.Model):
 class UserSettings(models.Model):
    owner = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
    
-    
+class PasswordToken(models.Model):
+    token = models.UUIDField(null=False)
+    email = models.EmailField(null=False, blank=False)
+    name = models.CharField(max_length=200, null=True)
+    last_name = models.CharField(max_length=200, null=True)
+    user_id = models.PositiveIntegerField(null=True)
+    is_staff = models.BooleanField(null=False, default=False)
+    token_life = models.PositiveIntegerField(null=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.token)

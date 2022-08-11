@@ -1,0 +1,13 @@
+
+<ul class="list-group ">
+    {% for location in locations %}
+    <li class="list-group-item d-flex justify-content-between align-items-center shadow-sm">
+       {{location.name}} - {{location.city}}, {{location.state}}
+        <div class=" btn-group">
+            <a title="Edit" href="{% url 'rpi:edit_location' location.id %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-edit"></i> Edit</a>
+            <span title="Delete" hx-delete="{% url 'rpi:delete_location' location.id %}" hx-target="#location-list" hx-confirm="Confirm?" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i> Delete</span>
+        </div>
+        
+    </li>
+{% endfor %}
+</ul>

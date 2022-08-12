@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib import messages
+from django.http import HttpResponse
+from django.db.models.functions import Lower
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -62,16 +64,22 @@ class rPiModelsDelete(LoginRequiredMixin,View):
         model = RaspberryPiModel.objects.get(id = pk)
         model.delete()
 
-        models = RaspberryPiModel.objects.all()
-        context = {
-            'models': models
-        }
-
-        return render(request, 'rpi/partials/model-list.html', context)
+        return HttpResponse('')
+        #return render(request, 'rpi/partials/model-list.html', context)
 
 class rPiList(LoginRequiredMixin, View):
     def get(self,request):
-        rpis = RaspberryPi.objects.all()
+        order_by_param = request.GET.get('order_by','name')
+        sort_order = request.GET.get('sort', 'asc')
+      
+        if sort_order == 'asc':
+            rpis = RaspberryPi.objects.all().order_by(order_by_param)
+        else:
+            if order_by_param == 'name':
+                rpis = RaspberryPi.objects.all().order_by(Lower('name').desc())
+            else:
+                rpis = RaspberryPi.objects.all().order_by('-checked_in')
+        
         context = { 'rpis': rpis}
         return render(request, 'rpi/raspberry_pis.html', context)
 
@@ -115,9 +123,7 @@ class rPiDelete(LoginRequiredMixin, View):
         rpi = RaspberryPi.objects.get(id = pk)
         rpi.delete()
 
-        rpis = RaspberryPi.objects.all()
-        context = { 'rpis': rpis }
-        return render(request, 'rpi/partials/raspberry-pi-list.html', context)
+        return HttpResponse('')
 
 class rPiSettings(LoginRequiredMixin, View):
     def get(self, request, pk):

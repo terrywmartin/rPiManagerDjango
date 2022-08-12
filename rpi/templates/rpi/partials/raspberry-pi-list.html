@@ -1,5 +1,49 @@
-
-<ul class="list-group ">
+{% for rpi in rpis %}
+	<tr>
+		<td>
+             {{rpi.name}}
+		</td>
+        <td>
+            {{rpi.serial_number}}
+        </td>
+        <td>
+             <div class="form-outline  form-check ">
+                        <input class="form-check-input" type="checkbox" value="deployed" name="deployed" id="deployed"  {% if rpi.deployed %} checked {% endif %} disabled>
+                        <label class="form-check-label" for="deployed"></label>
+                    </div>
+        </td>
+    
+        {% if rpi.checked_in ==  null %}
+            <td>
+                Never
+            </td>
+        {% else %}
+            <td>
+                {{rpi.checked_in}}
+            </td>
+        {% endif %}
+		<td style="text-align: right">
+           <div class=" btn-group">
+            <a title="Edit" href="{% url 'rpi:edit_rpi' rpi.id %}" class="btn btn-primary btn"><i class="fa-solid fa-edit"></i> </a>
+            <a title="Details" href="{% url 'rpi:view_rpi' rpi.id %}" class="btn btn-success btn"><i class="fas fa-list-alt"></i> </a>
+            <span title="Delete" hx-delete="{% url 'rpi:delete_rpi' rpi.id %}" class="btn btn-danger btn"><i class="fa-solid fa-trash-can"></i></span>
+            <a title="Settings" href="{% url 'rpi:rpi_settings' rpi.id %}" class="btn btn-outline-info btn"><i class="fas fa-cog"></i></a>
+            <a  title="Upload Key" href="{% url 'rpi:rpi_upload_key' rpi.id %}" class="btn btn-outline-info btn"><i class="fas fa-upload"></i></a>
+            <a title="Download Key" href="{% url 'rpi:rpi_download_key' rpi.id %}" class="btn btn-outline-info btn"><i class="fas fa-download"></i></a>
+           
+        </div>
+		</td>
+        <td>
+             {% if rpi.deployed %}
+                <a title="Check-in" href="{% url 'rpi:rpi_checkin' rpi.id %}" class="btn btn-outline-info btn"><i class="fas fa-arrow-circle-left"></i>&nbsp;Check-in</a>
+            {% else %}
+                <a title="Deploy" href="{% url 'rpi:rpi_deploy' rpi.id %}" class="btn btn-outline-info btn"><i class="fas fa-arrow-circle-right"></i>&nbsp;Deploy</a>
+             {% endif %}
+        
+        </td>
+	</tr>
+{% endfor %}
+{% comment %} <ul class="list-group ">
     {% for rpi in rpis %}
     <li class="list-group-item d-flex justify-content-between align-items-center shadow-sm">
        {{rpi.name}}
@@ -21,4 +65,4 @@
        
     </li>
 {% endfor %}
-</ul>
+</ul> {% endcomment %}

@@ -1,13 +1,15 @@
 
-<ul class="list-group ">
-    {% for model in models %}
-    <li class="list-group-item d-flex justify-content-between align-items-center shadow-sm">
-       {{model.name}}
-        <div class=" btn-group">
-            <a title="Edit" href="{% url 'rpi:edit_model' model.id %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-edit"></i> Edit</a>
-            <span title="Delete" hx-delete="{% url 'rpi:delete_model' model.id %}" hx-target="#model-list" hx-confirm="Confirm?" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i> Delete</span>
-        </div>
-        
-    </li>
+{% for model in models %}
+	<tr>
+		<td>
+            {{model.name}}
+		</td>
+        <td></td>
+		<td style="text-align: right">
+            <div class=" btn-group">
+                <a title="Edit" href="{% url 'rpi:edit_model' model.id %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-edit"></i> Edit</a>
+                <span title="Delete" hx-delete="{% url 'rpi:delete_model' model.id %}"  class="btn btn-danger btn-sm"><i class="fa-solid fa-trash-can"></i> Delete</span>
+            </div>
+		</td>
+	</tr>
 {% endfor %}
-</ul>

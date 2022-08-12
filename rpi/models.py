@@ -83,7 +83,7 @@ class RaspberryPi(models.Model):
     date_deployed = models.DateTimeField(null=True, blank = True)
     deployed = models.BooleanField(default = False)
     model = models.ForeignKey(RaspberryPiModel,on_delete=models.SET_NULL,null=True,blank=True)
-    ip_address = models.CharField(max_length=15)
+    ip_address = models.CharField(max_length=15,blank=True,null=True)
 
     def __str__(self):
         return self.name

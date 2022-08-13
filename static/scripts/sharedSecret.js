@@ -12,7 +12,9 @@
 
 			//Lower text for case insensitive
 			var rowText = $(val).text().toLowerCase();
+
 			var inputText = $(that).val().toLowerCase();
+			console.log(inputText)
 			if (inputText != '') {
 				$('.search-query-sf').remove();
 				tableBody.prepend('<tr class="search-query-sf"><td colspan="6"><strong>Searching for: "'

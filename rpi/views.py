@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect
 from django.views import View
+from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponse
 from django.db.models.functions import Lower
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .models import RaspberryPiModel, RaspberryPi, Location
+from .models import RaspberryPiModel, RaspberryPi, Location, RaspberryPiDeployed
 from .forms import RaspberryPiModelForm, RaspberryPiForm, LocationForm
 
 # Create your views here.
@@ -79,8 +82,15 @@ class rPiList(LoginRequiredMixin, View):
                 rpis = RaspberryPi.objects.all().order_by(Lower('name').desc())
             else:
                 rpis = RaspberryPi.objects.all().order_by('-checked_in')
-        
-        context = { 'rpis': rpis}
+        paginator = Paginator(rpis, 2)
+        page_number = request.GET.get('page', 1)
+        page_obj = paginator.get_page(page_number)
+       
+        context = { 'rpis': rpis, 
+            'page_obj': page_obj,
+            'order_by': order_by_param,
+            'sort': sort_order
+        }
         return render(request, 'rpi/raspberry_pis.html', context)
 
 class rPiAdd(LoginRequiredMixin, View):
@@ -135,19 +145,59 @@ class rPiSettings(LoginRequiredMixin, View):
 
 class rPiDeploy(LoginRequiredMixin, View):
     def get(self, request, pk):
+        rpi = RaspberryPi.objects.get(id = pk)
 
+        if rpi.deployed:
+            return redirect('rpi:view_rpis')
+        locations = Location.objects.all()
+
+        paginator = Paginator(locations, 2)
+        page_number = request.GET.get('page', 1)
+        page_obj = paginator.get_page(page_number)
         context = {
+            'rpi': rpi,
+            'locations': locations,
+            'page_obj': page_obj,
             'next': 'rpi:view_rpis'
         }
-        return render(request, 'rpi/rpi_settings.html', context)
+        return render(request, 'rpi/deploy_rpi.html', context)
+
+    def post(self, request, pk):
+        rpi = RaspberryPi.objects.get(id=pk)
+        location = Location.objects.get(id=request.GET.get('loc'))
+
+        deployed = RaspberryPiDeployed.objects.create(rpi=rpi, location=location)
+        print(deployed)
+        if deployed != None:
+            rpi.deployed = True
+            rpi.save()
+
+
+        if request.META.get('HTTP_HX_REQUEST'):
+            headers = {
+                'HX-Redirect': 'rpi:view_rpis'
+            }
+            response = HttpResponse()
+            response['HX-Redirect'] =  reverse_lazy('rpi:view_rpis')
+            return response
+    
+        
 
 class rPiCheckin(LoginRequiredMixin, View):
-    def get(self, request, pk):
+    def post(self, request, pk):
+        rpi = RaspberryPi.objects.get(id=pk)
+        rpi.deployed = False
+        deployed = RaspberryPiDeployed.objects.get(rpi=rpi,active=True)
+        deployed.active = False
+        rpi.save()
+        deployed.save()
 
-        context = {
-            'next': 'rpi:view_rpis'
+        headers = {
+                'HX-Redirect': 'rpi:view_rpis'
         }
-        return render(request, 'rpi/rpi_settings.html', context)
+        response = HttpResponse()
+        response['HX-Redirect'] =  reverse_lazy('rpi:view_rpis')
+        return response
 
 class rPiDownloadKey(LoginRequiredMixin, View):
     def get(self, request, pk):
@@ -164,6 +214,101 @@ class rPiUploadKey(LoginRequiredMixin, View):
             'next': 'rpi:view_rpis'
         }
         return render(request, 'rpi/rpi_settings.html', context)
+
+class rPiSearch(LoginRequiredMixin, View):
+    def post(self, request):
+       
+        q = request.POST.get('search') if request.POST.get('search') != None and request.POST.get('search') != '' else ''
+        rpis = RaspberryPi.objects.filter(Q(name__icontains=q))
+        order_by_param = request.GET.get('order_by','name')
+        sort_order = request.GET.get('sort', 'asc')
+        if request.POST.get('search') != '':
+            paginator = Paginator(rpis, rpis.count())    
+        else:
+            if sort_order == 'asc':
+                if order_by_param == 'name':
+                    rpis = RaspberryPi.objects.all().order_by(order_by_param)
+                else:
+                    rpis = RaspberryPi.objects.all().order_by('-checked_in')
+            else:
+                if order_by_param == 'name':
+                    rpis = RaspberryPi.objects.all().order_by(Lower('name').desc())
+                else:
+                    rpis = RaspberryPi.objects.all().order_by('-checked_in')
+            
+            paginator = Paginator(rpis, 2)
+
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context = {
+            'page_obj': page_obj,
+            'order_by': order_by_param,
+            'sort': sort_order
+           
+        }
+        return render(request, 'rpi/partials/raspberry-pi-list.html', context)
+
+class rPiDeployed(LoginRequiredMixin, View):
+    def get(self,request):
+        order_by_param = request.GET.get('order_by','name')
+        sort_order = request.GET.get('sort', 'asc')
+      
+        if sort_order == 'asc':
+            if order_by_param == 'name':
+                rpis = RaspberryPi.objects.filter(deployed=True).order_by(order_by_param)
+            else:
+                rpis = RaspberryPi.objects.filter(deployed=True).order_by('checked_in')
+        else:
+            if order_by_param == 'name':
+                rpis = RaspberryPi.objects.filter(deployed=True).order_by(Lower('name').desc())
+            else:
+                rpis = RaspberryPi.objects.filter(deployed=True).order_by('-checked_in')
+        paginator = Paginator(rpis, 2)
+        page_number = request.GET.get('page', 1)
+        page_obj = paginator.get_page(page_number)
+       
+        context = { 'rpis': rpis, 
+            'page_obj': page_obj,
+            'order_by': order_by_param,
+            'sort': sort_order
+        }
+        return render(request, 'rpi/deployed_raspberry_pis.html', context)
+
+class rPiDeployedSearch(LoginRequiredMixin, View):
+    def post(self, request):
+       
+        q = request.POST.get('search') if request.POST.get('search') != None and request.POST.get('search') != '' else ''
+        rpis = RaspberryPi.objects.filter(Q(deployed = True)& Q(name__icontains=q))
+        
+        order_by_param = request.GET.get('order_by','name')
+        sort_order = request.GET.get('sort', 'asc')
+        if request.POST.get('search') != '':
+            paginator = Paginator(rpis, rpis.count())    
+        else:
+            if sort_order == 'asc':
+                if order_by_param == 'name':
+                    rpis = RaspberryPi.objects.filter(deployed=True).order_by(order_by_param)
+                else:
+                    rpis = RaspberryPi.objects.filter(deployed=True).order_by('checked_in')
+            else:
+                if order_by_param == 'name':
+                    rpis = RaspberryPi.objects.filter(deployed=True).order_by(Lower('name').desc())
+                else:
+                    rpis = RaspberryPi.objects.filter(deployed=True).order_by('-checked_in')
+            
+            paginator = Paginator(rpis, 2)
+
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context = {
+            'page_obj': page_obj,
+            'order_by': order_by_param,
+            'sort': sort_order
+           
+        }
+        return render(request, 'rpi/partials/deployed-rpi-list.html', context)
 
 class rPiViewLocations(LoginRequiredMixin, View):
     def get(self,request):
@@ -229,3 +374,27 @@ class rPiDeleteLocation(LoginRequiredMixin, View):
         locations = Location.objects.all()
         context = { 'locations': locations }
         return render(request, 'rpi/partials/location-list.html', context)
+
+class rPiSearchLocation(LoginRequiredMixin, View):
+    def post(self, request):
+        print(request.POST.get('search'))
+        q = request.POST.get('search') if request.POST.get('search') != None and request.POST.get('search') != '' else ''
+        locations = Location.objects.filter(Q(name__icontains=q) |
+        Q(state__icontains=q) |
+        Q(city__icontains=q))
+
+        if request.POST.get('search') != '':
+            paginator = Paginator(locations, locations.count())    
+        else:
+            paginator = Paginator(locations, 2)
+
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        context = {
+            'locations': locations,
+            'page_obj': page_obj,
+            'next': 'rpi:view_rpis'
+        }
+        return render(request, 'rpi/partials/deploy-location-list.html', context)
+

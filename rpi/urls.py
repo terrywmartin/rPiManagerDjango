@@ -17,15 +17,19 @@ urlpatterns = [
    path('rpis/delete/<int:pk>', views.rPiDelete.as_view(), name='delete_rpi'), 
    path('rpis/settings/<int:pk>', views.rPiSettings.as_view(), name='rpi_settings'), 
    path('rpis/deploy/<int:pk>', views.rPiDeploy.as_view(), name='rpi_deploy'), 
+   path('rpis/search', views.rPiSearch.as_view(), name='rpi_search'), 
    path('rpis/check-in/<int:pk>', views.rPiCheckin.as_view(), name='rpi_checkin'), 
    path('rpis/key/upload/<int:pk>', views.rPiUploadKey.as_view(), name='rpi_upload_key'), 
    path('rpis/key/downlaod/<int:pk>', views.rPiDownloadKey.as_view(), name='rpi_download_key'), 
+   path('rpis/deployed/', views.rPiDeployed.as_view(), name='rpi_deployed'), 
+   path('rpis/deployed/search', views.rPiDeployedSearch.as_view(), name='rpi_deployed_search'), 
 
    path('locations/', views.rPiViewLocations.as_view(), name='view_locations'), 
    path('locations/<int:pk>', views.rPiViewLocation.as_view(), name='view_location'), 
    path('locations/add/', views.rPiAddLocation.as_view(), name='add_location'), 
    path('locations/edit/<int:pk>', views.rPiEditLocation.as_view(), name='edit_location'), 
-   path('locations/delete/<int:pk>', views.rPiDeleteLocation.as_view(), name='delete_location'), 
+   path('locations/delete/<int:pk>', views.rPiDeleteLocation.as_view(), name='delete_location'),
+   path('locations/search', views.rPiSearchLocation.as_view(), name='search_location'),
 ]
     
     

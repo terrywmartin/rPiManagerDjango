@@ -1,0 +1,12 @@
+{% for location in page_obj %}
+                                <tr>
+                                    <td>
+                                        {{location.name}} - {{location.city}}, {{location.state}}
+                                    </td>
+                                    <td style="text-align: right">
+                                    <div class=" btn-group">
+                                        <a title="Deploy"  hx-post="{% url 'rpi:rpi_deploy' rpi.id %}?loc={{location.id}}" class="btn btn-outline-info "><i class="fas fa-arrow-circle-right"></i> Deploy</a>                                        
+                                    </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}

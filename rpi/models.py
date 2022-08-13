@@ -77,16 +77,28 @@ class Location(models.Model):
 class RaspberryPi(models.Model):
     name = models.CharField(max_length=50,blank =False,null=False)
     serial_number = models.CharField(max_length=250,blank=True,null=True)
-    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True,blank=True)
-    checked_in = models.DateTimeField(null=True, blank = True)
-    connect = models.BooleanField(default = False)
-    date_deployed = models.DateTimeField(null=True, blank = True)
+    
     deployed = models.BooleanField(default = False)
     model = models.ForeignKey(RaspberryPiModel,on_delete=models.SET_NULL,null=True,blank=True)
     ip_address = models.CharField(max_length=15,blank=True,null=True)
 
     def __str__(self):
         return self.name
+
+class RaspberryPiDeployed(models.Model):
+    rpi = models.ForeignKey(RaspberryPi, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    date_deployed = models.DateTimeField(auto_now_add=True)
+    checked_in = models.DateTimeField(null=True, blank = True)
+    active = models.BooleanField(default = True)
+    connect = models.BooleanField(default = False)
+
+    def __str__(self):
+        return self.rpi.name + ' - ' + self.location.name
+    class Meta:
+        verbose_name_plural = "raspberry pi deployed"
+    
+
 
 class RaspberryPiSettings(models.Model):
     tab_switch_delay = models.SmallIntegerField(default=10)
@@ -99,6 +111,9 @@ class RaspberryPiURLs(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name_plural = "raspberry pi urls"
 
 """ class RaspberryPiLocation(models.Model):
     rpi = models.ForeignKey(RaspberryPi,on_delete=models.CASCADE)

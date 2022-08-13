@@ -9,6 +9,8 @@ from django.core.paginator import Paginator
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from django.conf import settings
+
 from .models import RaspberryPiModel, RaspberryPi, Location, RaspberryPiDeployed
 from .forms import RaspberryPiModelForm, RaspberryPiForm, LocationForm
 
@@ -82,7 +84,7 @@ class rPiList(LoginRequiredMixin, View):
                 rpis = RaspberryPi.objects.all().order_by(Lower('name').desc())
             else:
                 rpis = RaspberryPi.objects.all().order_by('-checked_in')
-        paginator = Paginator(rpis, 2)
+        paginator = Paginator(rpis, settings.PER_PAGE)
         page_number = request.GET.get('page', 1)
         page_obj = paginator.get_page(page_number)
        
@@ -151,7 +153,7 @@ class rPiDeploy(LoginRequiredMixin, View):
             return redirect('rpi:view_rpis')
         locations = Location.objects.all()
 
-        paginator = Paginator(locations, 2)
+        paginator = Paginator(locations, settings.PER_PAGE)
         page_number = request.GET.get('page', 1)
         page_obj = paginator.get_page(page_number)
         context = {
@@ -236,7 +238,7 @@ class rPiSearch(LoginRequiredMixin, View):
                 else:
                     rpis = RaspberryPi.objects.all().order_by('-checked_in')
             
-            paginator = Paginator(rpis, 2)
+            paginator = Paginator(rpis, settings.PER_PAGE)
 
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -264,7 +266,7 @@ class rPiDeployed(LoginRequiredMixin, View):
                 rpis = RaspberryPi.objects.filter(deployed=True).order_by(Lower('name').desc())
             else:
                 rpis = RaspberryPi.objects.filter(deployed=True).order_by('-checked_in')
-        paginator = Paginator(rpis, 2)
+        paginator = Paginator(rpis, settings.PER_PAGE)
         page_number = request.GET.get('page', 1)
         page_obj = paginator.get_page(page_number)
        
@@ -297,7 +299,7 @@ class rPiDeployedSearch(LoginRequiredMixin, View):
                 else:
                     rpis = RaspberryPi.objects.filter(deployed=True).order_by('-checked_in')
             
-            paginator = Paginator(rpis, 2)
+            paginator = Paginator(rpis, settings.PER_PAGE)
 
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -386,7 +388,7 @@ class rPiSearchLocation(LoginRequiredMixin, View):
         if request.POST.get('search') != '':
             paginator = Paginator(locations, locations.count())    
         else:
-            paginator = Paginator(locations, 2)
+            paginator = Paginator(locations, settings.PER_PAGE)
 
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)

@@ -23,6 +23,7 @@ urlpatterns = [
    path('rpis/key/downlaod/<int:pk>', views.rPiDownloadKey.as_view(), name='rpi_download_key'), 
    path('rpis/deployed/', views.rPiDeployed.as_view(), name='rpi_deployed'), 
    path('rpis/deployed/search', views.rPiDeployedSearch.as_view(), name='rpi_deployed_search'), 
+   path('rpis/connect/<int:pk>', views.rPiConnect.as_view(), name='rpi_connect'), 
 
    path('locations/', views.rPiViewLocations.as_view(), name='view_locations'), 
    path('locations/<int:pk>', views.rPiViewLocation.as_view(), name='view_location'), 

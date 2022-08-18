@@ -25,10 +25,10 @@
                 Name &nbsp;<a href="?order_by=name"><i class="fas fa-angle-up"></i></a>&nbsp;<a href="?order_by=name&sort=desc"><i class="fas fa-angle-down"></i></a>
               </th>
               <th>
-                Serial Number
+                Location &nbsp;<a href="?order_by=location"><i class="fas fa-angle-up"></i></a>&nbsp;<a href="?order_by=location&sort=desc"><i class="fas fa-angle-down"></i></a>
               </th>
               <th>
-                Deployed
+                Connect
               </th>
               <th >
                 Last Checked In&nbsp;<a href="?order_by=checked_in"><i class="fas fa-angle-up"></i></a>&nbsp;<a href="?order_by=checked_in&sort=desc"><i class="fas fa-angle-down"></i></a>
@@ -36,7 +36,7 @@
 			      </tr>
           </thead>
           <tbody id="rPiTable" hx-confirm="Are you sure?" hx-target="closest tr" hx-swap="outerHTML swap:1s">
-                {% include 'rpi/partials/raspberry-pi-list.html' %} 
+                {% include 'rpi/partials/deployed-rpi-list.html' %} 
           </tbody>
         </table>
 	      </div>

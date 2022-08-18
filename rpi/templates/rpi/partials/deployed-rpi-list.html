@@ -1,45 +1,28 @@
 {% for rpi in page_obj %}
 	<tr>
 		<td>
-             {{rpi.name}}
+             {{rpi.rpi.name}}
 		</td>
         <td>
-            {{rpi.serial_number}}
+            {{rpi.location.name}}
         </td>
         <td>
-             <div class="form-outline  form-check ">
-                        <input class="form-check-input" type="checkbox" value="deployed" name="deployed" id="deployed"  {% if rpi.deployed %} checked {% endif %} disabled>
-                        <label class="form-check-label" for="deployed"></label>
-                    </div>
+            <div class=" ">
+                <a title="Deploy" href="{% url 'rpi:view_rpis' %}" class="btn btn-sm btn-outline-success"><i class="fa-solid fa-key-skeleton-left-right"></i>&nbsp;Connect</a>
+                        {% comment %} <input class="form-check-input" type="checkbox" value="connect" name="connect" id="connect"  >
+                        <label class="form-check-label" for="deployed"></label> {% endcomment %}
+            </div>
         </td>
     
-        {% if rpi.checked_in ==  null %}
+        {% if rpi.rpi.checked_in ==  null %}
             <td>
                 Never
             </td>
         {% else %}
             <td>
-                {{rpi.checked_in}}
+                {{rpi.rpi.checked_in}}
             </td>
         {% endif %}
-		<td style="text-align: right">
-           <div class=" btn-group">
-            <a title="Edit" href="{% url 'rpi:edit_rpi' rpi.id %}" class="btn btn-primary btn"><i class="fa-solid fa-edit"></i> </a>
-            <a title="Details" href="{% url 'rpi:view_rpi' rpi.id %}" class="btn btn-success btn"><i class="fas fa-list-alt"></i> </a>
-            <span title="Delete" hx-delete="{% url 'rpi:delete_rpi' rpi.id %}" class="btn btn-danger btn"><i class="fa-solid fa-trash-can"></i></span>
-            <a title="Settings" href="{% url 'rpi:rpi_settings' rpi.id %}" class="btn btn-outline-info btn"><i class="fas fa-cog"></i></a>
-            <a  title="Upload Key" href="{% url 'rpi:rpi_upload_key' rpi.id %}" class="btn btn-outline-info btn"><i class="fas fa-upload"></i></a>
-            <a title="Download Key" href="{% url 'rpi:rpi_download_key' rpi.id %}" class="btn btn-outline-info btn"><i class="fas fa-download"></i></a>
-           
-        </div>
-		</td>
-        <td>
-             {% if rpi.deployed %}
-                <a title="Check-in"  hx-post="{% url 'rpi:rpi_checkin' rpi.id %}" class="btn btn-outline-info "><i class="fas fa-arrow-circle-left"></i>&nbsp;Check-in</a>
-            {% else %}
-                <a title="Deploy" href="{% url 'rpi:rpi_deploy' rpi.id %}" class="btn btn-outline-info"><i class="fas fa-arrow-circle-right"></i>&nbsp;Deploy</a>
-             {% endif %}
-        
-        </td>
+		
 	</tr>
 {% endfor %}

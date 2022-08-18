@@ -169,7 +169,7 @@ class rPiDeploy(LoginRequiredMixin, View):
         location = Location.objects.get(id=request.GET.get('loc'))
 
         deployed = RaspberryPiDeployed.objects.create(rpi=rpi, location=location)
-        print(deployed)
+        
         if deployed != None:
             rpi.deployed = True
             rpi.save()
@@ -255,22 +255,27 @@ class rPiDeployed(LoginRequiredMixin, View):
     def get(self,request):
         order_by_param = request.GET.get('order_by','name')
         sort_order = request.GET.get('sort', 'asc')
-      
+        
         if sort_order == 'asc':
             if order_by_param == 'name':
-                rpis = RaspberryPi.objects.filter(deployed=True).order_by(order_by_param)
-            else:
-                rpis = RaspberryPi.objects.filter(deployed=True).order_by('checked_in')
+                rpis = RaspberryPiDeployed.objects.filter(active = True).order_by('rpi__name')
+               
+            elif order_by_param == 'checked_in':
+               rpis = RaspberryPiDeployed.objects.filter(active = True).order_by('checked_in')
+            elif order_by_param == 'location':
+                rpis = RaspberryPiDeployed.objects.filter(active = True).order_by('location__name')
         else:
             if order_by_param == 'name':
-                rpis = RaspberryPi.objects.filter(deployed=True).order_by(Lower('name').desc())
-            else:
-                rpis = RaspberryPi.objects.filter(deployed=True).order_by('-checked_in')
+                rpis = RaspberryPiDeployed.objects.filter(active=True).order_by(Lower('rpi__name').desc())
+            elif order_by_param == 'checked_in':
+                rpis = RaspberryPiDeployed.objects.filter(active = True).order_by('-checked_in')
+            elif order_by_param == 'location':
+                rpis = RaspberryPiDeployed.objects.filter(active = True).order_by(Lower('location__name').desc())
         paginator = Paginator(rpis, settings.PER_PAGE)
         page_number = request.GET.get('page', 1)
         page_obj = paginator.get_page(page_number)
        
-        context = { 'rpis': rpis, 
+        context = { 
             'page_obj': page_obj,
             'order_by': order_by_param,
             'sort': sort_order
@@ -281,7 +286,7 @@ class rPiDeployedSearch(LoginRequiredMixin, View):
     def post(self, request):
        
         q = request.POST.get('search') if request.POST.get('search') != None and request.POST.get('search') != '' else ''
-        rpis = RaspberryPi.objects.filter(Q(deployed = True)& Q(name__icontains=q))
+        rpis = RaspberryPiDeployed.objects.filter(Q(active=True)&(Q(rpi__name__icontains=q)| Q(location__name__icontains=q)|Q(location__city__icontains=q)|Q(location__state__icontains=q)))
         
         order_by_param = request.GET.get('order_by','name')
         sort_order = request.GET.get('sort', 'asc')
@@ -290,15 +295,19 @@ class rPiDeployedSearch(LoginRequiredMixin, View):
         else:
             if sort_order == 'asc':
                 if order_by_param == 'name':
-                    rpis = RaspberryPi.objects.filter(deployed=True).order_by(order_by_param)
-                else:
-                    rpis = RaspberryPi.objects.filter(deployed=True).order_by('checked_in')
+                    rpis = RaspberryPiDeployed.objects.filter(active = True).order_by('rpi__name')
+                elif order_by_param == 'checked_in':
+                    rpis = RaspberryPiDeployed.objects.filter(active = True).order_by('checked_in')
+                elif order_by_param == 'location':
+                    rpis = RaspberryPiDeployed.objects.filter(active = True).order_by('location__name')
             else:
                 if order_by_param == 'name':
-                    rpis = RaspberryPi.objects.filter(deployed=True).order_by(Lower('name').desc())
-                else:
-                    rpis = RaspberryPi.objects.filter(deployed=True).order_by('-checked_in')
-            
+                    rpis = RaspberryPiDeployed.objects.filter(active=True).order_by(Lower('rpi__name').desc())
+                elif order_by_param == 'checked_in':
+                    rpis = RaspberryPiDeployed.objects.filter(active = True).order_by('-checked_in')
+                elif order_by_param == 'location':
+                    rpis = RaspberryPiDeployed.objects.filter(active = True).order_by(Lower('location__name').desc())
+                
             paginator = Paginator(rpis, settings.PER_PAGE)
 
         page_number = request.GET.get('page')
@@ -379,7 +388,7 @@ class rPiDeleteLocation(LoginRequiredMixin, View):
 
 class rPiSearchLocation(LoginRequiredMixin, View):
     def post(self, request):
-        print(request.POST.get('search'))
+        
         q = request.POST.get('search') if request.POST.get('search') != None and request.POST.get('search') != '' else ''
         locations = Location.objects.filter(Q(name__icontains=q) |
         Q(state__icontains=q) |
@@ -400,3 +409,6 @@ class rPiSearchLocation(LoginRequiredMixin, View):
         }
         return render(request, 'rpi/partials/deploy-location-list.html', context)
 
+class rPiConnect(LoginRequiredMixin, View):
+    def get(self, reqeust, pk):
+        return redirect('rpi:rpi_deployed')

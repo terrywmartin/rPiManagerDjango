@@ -231,7 +231,7 @@ class rPiSearch(LoginRequiredMixin, View):
                 if order_by_param == 'name':
                     rpis = RaspberryPi.objects.all().order_by(order_by_param)
                 else:
-                    rpis = RaspberryPi.objects.all().order_by('-checked_in')
+                    rpis = RaspberryPi.objects.all().order_by('checked_in')
             else:
                 if order_by_param == 'name':
                     rpis = RaspberryPi.objects.all().order_by(Lower('name').desc())
